@@ -90,32 +90,14 @@ static int64_t power(int64_t base, int64_t exp)
 }
 
 #if defined(_MSC_VER)
-#   if defined(_WIN64)
-#       pragma intrinsic(_BitScanReverse64)
-#   else
-#       pragma intrinsic(_BitScanReverse)
-#   endif 
+#pragma intrinsic(_BitScanReverse64)
 #endif
 
 static int32_t get_bucket_index(const struct hdr_histogram* h, int64_t value)
 {
 #if defined(_MSC_VER)
     uint32_t leading_zero = 0;
-    int64_t masked_value = value | h->sub_bucket_mask;
-#   if defined(_WIN64)
-        _BitScanReverse64(&leading_zero, masked_value);
-#   else
-        uint32_t high = masked_value >> 32;
-        if  (_BitScanReverse(&leading_zero, high))
-        {
-            leading_zero += 32;
-        }
-        else
-        {
-            uint32_t low = masked_value & 0x00000000FFFFFFFF;
-            _BitScanReverse(&leading_zero, low);
-        }
-#   endif
+	_BitScanReverse64(&leading_zero, value | h->sub_bucket_mask);
 	int32_t pow2ceiling = 64 - (63 - leading_zero); // smallest power of 2 containing value
 #else
     int32_t pow2ceiling = 64 - __builtin_clzll(value | h->sub_bucket_mask); // smallest power of 2 containing value
