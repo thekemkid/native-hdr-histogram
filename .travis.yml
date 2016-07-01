@@ -73,7 +73,7 @@ before_install:
     export PYTHONPATH=$(pwd)/py-local/lib/python/site-packages;
   fi;
 - scripts/validate_tag.sh
-- source ./scripts/install_node.sh ${NODE_VERSION}
+- bash ./scripts/install_node.sh ${NODE_VERSION}
 install:
 - export PATH=./node_modules/.bin/:$PATH
 before_script:
